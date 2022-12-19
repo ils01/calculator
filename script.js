@@ -25,13 +25,10 @@ let displayText = document.getElementById('displayText');
 let firstNumber = null;
 let secondNumber = null;
 let operator = null;
-
+let flag = false;
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener("click", function(){
-       if(firstNumber !== null && secondNumber !== null){
-            disp = operate(operator, firstNumber, secondNumber);
-       }
-       else if (firstNumber === null){
+        if (firstNumber === null){
             if(key.classList.contains('number')){
                 if(displayText.innerText === '0'){
                     displayText.innerText = '';
@@ -46,19 +43,39 @@ document.querySelectorAll('.key').forEach(key => {
        }
        else if (secondNumber === null && operator !== null){
             if(key.classList.contains('number')){
-                if(displayText.innerText.length === 1 && typeof displayText.innerText !== 'number'){
+                if(displayText.innerText.length === 1 && !flag){
                     displayText.innerText = '';
+                    flag = true;
                 }
                 displayText.innerText += key.innerText;
             }
-            else if(key.innerText === "="){
+            else if(key.classList.contains('sign')){
                 secondNumber = Number(displayText.innerText)
                 displayText.innerText = operate(operator, firstNumber,secondNumber);
-                console.log(operator)
-                console.log(firstNumber)
-                console.log(secondNumber)
+                firstNumber = Number(displayText.innerText);
+                operator = null;
+                secondNumber = null;
+                flag = false;
             }
        }
-        
+       else if (secondNumber === null && operator === null){
+        if(key.classList.contains('number')){
+            if(!flag){
+                displayText.innerText = '';
+                flag = true;
+            }
+            displayText.innerText += key.innerText;
+        }
+        else if(key.classList.contains('sign')){
+                operator = key.innerText;
+                secondNumber = Number(displayText.innerText);
+                displayText.innerText = operate(operator,firstNumber,secondNumber);
+                firstNumber = Number(displayText.innerText);
+                operator = null;
+                secondNumber = null;
+                flag = false;
+        }
+       }
+       
     })
 })
