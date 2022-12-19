@@ -22,9 +22,43 @@ function operate(operator, a, b){
 }
 
 let displayText = document.getElementById('displayText');
+let firstNumber = null;
+let secondNumber = null;
+let operator = null;
 
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener("click", function(){
-        displayText.innerText = key.innerText;
+       if(firstNumber !== null && secondNumber !== null){
+            disp = operate(operator, firstNumber, secondNumber);
+       }
+       else if (firstNumber === null){
+            if(key.classList.contains('number')){
+                if(displayText.innerText === '0'){
+                    displayText.innerText = '';
+                }
+                displayText.innerText += key.innerText;
+            }
+            else if(key.classList.contains('sign') && key.innerText !== "="){
+                firstNumber = Number(displayText.innerText);
+                operator = key.innerText;
+                displayText.innerText = key.innerText;
+            }
+       }
+       else if (secondNumber === null && operator !== null){
+            if(key.classList.contains('number')){
+                if(displayText.innerText.length === 1 && typeof displayText.innerText !== 'number'){
+                    displayText.innerText = '';
+                }
+                displayText.innerText += key.innerText;
+            }
+            else if(key.innerText === "="){
+                secondNumber = Number(displayText.innerText)
+                displayText.innerText = operate(operator, firstNumber,secondNumber);
+                console.log(operator)
+                console.log(firstNumber)
+                console.log(secondNumber)
+            }
+       }
+        
     })
 })
