@@ -20,3 +20,11 @@ function operate(operator, a, b){
     else if(operator === "/") return divide(a,b);
     else return "wrong operator";
 }
+
+let displayText = document.getElementById('displayText');
+
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener("click", function(){
+        displayText.innerText = key.innerText;
+    })
+})
