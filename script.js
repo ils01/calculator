@@ -18,5 +18,5 @@ function operate(operator, a, b){
     else if(operator === "-") return substract(a,b);
     else if (operator === "*") return multiply(a,b);
     else if(operator === "/") return divide(a,b);
-    else return "WROOOONG!";
+    else return "wrong operator";
 }
