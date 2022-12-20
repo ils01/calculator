@@ -44,6 +44,17 @@ document.querySelectorAll('.key').forEach(key => {
             flagTypingNum = false;
             dotDisabled = false;
         }
+        else if(key.id === "c" && !isNaN(displayText.innerText)){
+            if(displayText.innerText.length === 1){
+                displayText.innerText = '0';
+                flagTypingNum = false;
+                dotDisabled = false;
+            }else{
+                displayText.innerText = displayText.innerText
+                    .substring(0, displayText.innerText.length - 1);
+                if(!displayText.innerText.indexOf(".") !== -1) dotDisabled = false;
+            }
+        }
         else if (firstNumber === null){
             if(key.classList.contains('number')){
                 if(!flagTypingNum){
