@@ -27,63 +27,79 @@ function operate(operator, a, b){
     else return "wrong operator";
 }
 
+function nullEverything(){
+    displayText.innerText='0';
+    firstNumber = null;
+    secondNumber = null;
+    operator = null;
+    flagTypingNum = false;
+    dotDisabled = false;
+}
+
+function pressC(){
+    if(displayText.innerText.length === 1){
+        nullEverything();
+    }else{
+        displayText.innerText = displayText.innerText.substring(0, displayText.innerText.length - 1);
+    }
+}
+
+function displayOperator(key){
+    operator = key.innerText;
+    displayText.innerText = key.innerText;
+    dotDisabled = false;
+}
+
+function addNumber(key){
+    if(!flagTypingNum){
+        displayText.innerText = '';
+        flagTypingNum = true;
+    }
+    if(key.id === "dot"){
+        if(displayText.innerText.indexOf(".") === -1) dotDisabled = false;
+        if(!dotDisabled){
+            displayText.innerText += key.innerText;
+            dotDisabled = true;
+        }
+    }else{
+        displayText.innerText += key.innerText;
+    }
+}
+
 let displayText = document.getElementById('displayText');
-let firstNumber = null;
-let secondNumber = null;
-let operator = null;
-let flagTypingNum = false;
-let dotDisabled = false;
+let firstNumber;
+let secondNumber;
+let operator;
+let flagTypingNum;
+let dotDisabled;
+nullEverything();
 
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener("click", function(){
+        //AC clears everything
         if(key.id === "ac"){
-            displayText.innerText='0';
-            firstNumber = null;
-            secondNumber = null;
-            operator = null;
-            flagTypingNum = false;
-            dotDisabled = false;
+            nullEverything();
         }
+        //C deletes 1 symbol
         else if(key.id === "c" && !isNaN(displayText.innerText)){
-            if(displayText.innerText.length === 1){
-                displayText.innerText = '0';
-                flagTypingNum = false;
-                dotDisabled = false;
-            }else{
-                displayText.innerText = displayText.innerText
-                    .substring(0, displayText.innerText.length - 1);
-                if(!displayText.innerText.indexOf(".") !== -1) dotDisabled = false;
-            }
+            pressC();
         }
+        //in the beginning, after AC or if C deleted the only left number
         else if (firstNumber === null){
             if(key.classList.contains('number')){
-                if(!flagTypingNum){
-                    displayText.innerText = '';
-                    flagTypingNum = true;
-                }
-                if(key.id === "dot"){
-                    console.log('here');
-                    if(!dotDisabled){
-                        displayText.innerText += key.innerText;
-                        dotDisabled = true;
-                    }
-                }else{
-                    displayText.innerText += key.innerText;
-                }
-                
+                addNumber(key);
             }
             else if(key.classList.contains('sign') && key.id !== "equals"){
                 firstNumber = Number(displayText.innerText);
-                operator = key.innerText;
-                displayText.innerText = key.innerText;
+                displayOperator(key);
                 flagTypingNum = false;
-                dotDisabled = false;
             }
        }
+       //after firstNumber and operator is set
        else if (secondNumber === null && operator !== null){
             if(key.classList.contains('sign') && !isNaN(displayText.innerText) && flagTypingNum){
                     secondNumber = Number(displayText.innerText)
-                    displayText.innerText = operate(operator, firstNumber,secondNumber);
+                    displayText.innerText = operate(operator,firstNumber,secondNumber);
                     firstNumber = Number(displayText.innerText);
                     secondNumber = null;
                     flagTypingNum = false;
@@ -91,57 +107,24 @@ document.querySelectorAll('.key').forEach(key => {
                     if(key.id === 'equals') operator = null;
                     else operator = key.innerText;
             }
-            else if(key.classList.contains('sign') && isNaN(displayText.innerText) && !flagTypingNum){
-                operator = key.innerText;
-                displayText.innerText = operator;
-                dotDisabled = false;
+            else if(key.classList.contains('sign') && !flagTypingNum){
+                displayOperator(key);
             }
             else if(key.classList.contains('number')){
-                if(!flagTypingNum){
-                    displayText.innerText = '';
-                    flagTypingNum = true;
-                }
-                if(key.id === "dot"){
-                    console.log('here');
-                    if(!dotDisabled){
-                        displayText.innerText += key.innerText;
-                        dotDisabled = true;
-                    }
-                }else{
-                    displayText.innerText += key.innerText;
-                }
+                addNumber(key);
             }
        }
+       //after '='
        else if (secondNumber === null && operator === null){
         if(key.classList.contains('number')){
-            if(!flagTypingNum){
-                displayText.innerText = '';
-                flagTypingNum = true;
-            }
-            firstNumber = null;
-            if(key.id === "dot"){
-                console.log('here');
-                if(!dotDisabled){
-                    displayText.innerText += key.innerText;
-                    dotDisabled = true;
-                }
-            }else{
-                displayText.innerText += key.innerText;
-            }
+            addNumber(key);
         }
         else if(key.classList.contains('sign') && key.id !== "equals"){
-                console.log('here');
-                console.log(key.innerText);
-                operator = key.innerText;
-                displayText.innerText = operator;
+                firstNumber = Number(displayText.innerText);
+                displayOperator(key);
                 secondNumber = null;
                 flagTypingNum = false;
-                dotDisabled = false;
         }
        }
-       console.log("first " + firstNumber)
-       console.log("oper " + operator)
-       console.log("second " + secondNumber)
-       console.log('flagTypingNum ' + flagTypingNum)
-    })
+    });
 })
