@@ -45,8 +45,8 @@ function pressC(){
 }
 
 function displayOperator(key){
-    operator = key.innerText;
-    displayText.innerText = key.innerText;
+    operator = key;
+    displayText.innerText = operator;
     dotDisabled = false;
 }
 
@@ -91,7 +91,7 @@ document.querySelectorAll('.key').forEach(key => {
             }
             else if(key.classList.contains('sign') && key.id !== "equals"){
                 firstNumber = Number(displayText.innerText);
-                displayOperator(key);
+                displayOperator(key.innerText);
                 flagTypingNum = false;
             }
        }
@@ -108,7 +108,7 @@ document.querySelectorAll('.key').forEach(key => {
                     else operator = key.innerText;
             }
             else if(key.classList.contains('sign') && !flagTypingNum){
-                displayOperator(key);
+                displayOperator(key.innerText);
             }
             else if(key.classList.contains('number')){
                 addNumber(key);
@@ -121,10 +121,76 @@ document.querySelectorAll('.key').forEach(key => {
         }
         else if(key.classList.contains('sign') && key.id !== "equals"){
                 firstNumber = Number(displayText.innerText);
-                displayOperator(key);
+                displayOperator(key.innerText);
                 secondNumber = null;
                 flagTypingNum = false;
         }
        }
     });
+})
+
+function addKeyboardNumber(e){
+    if(!flagTypingNum){
+        displayText.innerText = '';
+        flagTypingNum = true;
+    }
+    if(e.key === '.'){
+        if(displayText.innerText.indexOf(".") === -1) dotDisabled = false;
+        if(!dotDisabled){
+            displayText.innerText += e.key;
+            dotDisabled = true;
+        }
+    }
+    else{
+        displayText.innerText += Number(e.key);
+    }
+}
+
+function keyIsSign(e){
+return e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/' || e.key === '=' || e.key === 'Enter';
+}
+function keyIsSignButNotEquals(e){
+    return e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/';
+}
+window.addEventListener('keydown', function(e){
+    if(e.code === 'KeyC') nullEverything();
+    else if(e.code === 'Backspace' && !isNaN(displayText.innerText)) pressC();
+    else if(firstNumber === null){
+        if(isFinite(e.key) || e.key === '.'){
+            addKeyboardNumber(e);
+        }else if(keyIsSignButNotEquals(e)){
+            firstNumber = Number(displayText.innerText);
+            displayOperator(e.key);
+            flagTypingNum = false;
+        }
+    }
+    else if(secondNumber === null && operator !== null){
+        if(keyIsSign(e) && !isNaN(displayText.innerText) && flagTypingNum){
+            secondNumber = Number(displayText.innerText)
+            displayText.innerText = operate(operator,firstNumber,secondNumber);
+            firstNumber = Number(displayText.innerText);
+            secondNumber = null;
+            flagTypingNum = false;
+            dotDisabled = false;
+            if(e.key === '=' || e.key === 'Enter') operator = null;
+            else operator = e.key;
+        }
+        else if(keyIsSign(e) && !flagTypingNum){
+            displayOperator(e.key);
+        }
+        else if(isFinite(e.key) || e.key === '.'){
+            addKeyboardNumber(e);
+        }
+    }
+    else if (secondNumber === null && operator === null){
+        if(isFinite(e.key) || e.key === '.'){
+            addKeyboardNumber(e);
+        }
+        else if(keyIsSignButNotEquals(e)){
+                firstNumber = Number(displayText.innerText);
+                displayOperator(e.key);
+                secondNumber = null;
+                flagTypingNum = false;
+        }
+       }
 })
